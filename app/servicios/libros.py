@@ -23,6 +23,15 @@ def obtener_libro(libro_id: int) -> Libro:
         raise LibroNoEncontradoError(f"No existe un libro con id {libro_id}.")
     return libro
 
+def buscar_libros(texto: str) -> list[Libro]:
+    texto_minuscula = texto.lower()
+    return [
+        libro
+        for libro in repositorio_libros.obtener_todos()
+        if texto_minuscula in libro.titulo.lower()
+        or texto_minuscula in libro.autor.lower()
+    ]
+
 # UPDATE
 def actualizar_libro(libro_id: int, campos_recibidos: dict) -> Libro:
     libro_actual = obtener_libro(libro_id)

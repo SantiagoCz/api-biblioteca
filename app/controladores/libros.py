@@ -15,6 +15,12 @@ def crear_libro(entrada: LibroEntrada):
 def listar_libros():
     return servicio_libros.listar_libros()
 
+
+@router.get("/buscar", response_model=list[Libro])
+def buscar_libros(texto: str):
+    return servicio_libros.buscar_libros(texto)
+
+
 @router.get("/{libro_id}", response_model=Libro)
 def obtener_libro(libro_id: int):
     return servicio_libros.obtener_libro(libro_id)
