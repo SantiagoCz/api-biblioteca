@@ -14,8 +14,16 @@ def crear_libro(datos_nuevos: LibroEntrada) -> Libro:
     return repositorio_libros.crear(datos_normalizados)
 
 # READ
-def listar_libros() -> list[Libro]:
-    return repositorio_libros.obtener_todos()
+def listar_libros(
+    autor: str | None = None,
+    disponible: bool | None = None,
+    desde: int = 0,
+    limite: int = 100,
+) -> list[Libro]:
+    libros = repositorio_libros.obtener_todos()
+    libros = filtrar_por_autor(libros, autor)
+    libros = filtrar_por_disponibilidad(libros, disponible)
+    return paginar(libros, desde, limite)
 
 def obtener_libro(libro_id: int) -> Libro:
     libro = _buscar_libro(libro_id)
@@ -78,3 +86,16 @@ def verificar_duplicado(titulo: str, autor: str, excluir_id: int | None = None) 
             continue
         if libro.titulo.lower() == titulo.lower() and libro.autor.lower() == autor.lower():
             raise LibroDuplicadoError(f"Ya existe el libro '{titulo}' de {autor}.")
+
+def filtrar_por_autor(libros: list[Libro], autor: str | None) -> list[Libro]:
+    if autor is None:
+        return libros
+    return [libro for libro in libros if libro.autor.lower() == autor.lower()]
+
+def filtrar_por_disponibilidad(libros: list[Libro], disponible: bool | None) -> list[Libro]:
+    if disponible is None:
+        return libros
+    return [libro for libro in libros if libro.disponible == disponible]
+
+def paginar(libros: list[Libro], desde: int, limite: int) -> list[Libro]:
+    return libros[desde : desde + limite]

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from app.modelos.libro import Libro, LibroEntrada
 from app.servicios import libros as servicio_libros
@@ -12,14 +12,17 @@ def crear_libro(entrada: LibroEntrada):
 
 # READ
 @router.get("", response_model=list[Libro])
-def listar_libros():
-    return servicio_libros.listar_libros()
-
+def listar_libros(
+    autor: str | None = None,
+    disponible: bool | None = None,
+    desde: int = Query(default=0, ge=0),
+    limite: int = Query(default=100, ge=0),
+):
+    return servicio_libros.listar_libros(autor, disponible, desde, limite)
 
 @router.get("/buscar", response_model=list[Libro])
 def buscar_libros(texto: str):
     return servicio_libros.buscar_libros(texto)
-
 
 @router.get("/{libro_id}", response_model=Libro)
 def obtener_libro(libro_id: int):
