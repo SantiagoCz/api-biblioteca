@@ -24,6 +24,10 @@ def listar_libros(
 def buscar_libros(texto: str):
     return servicio_libros.buscar_libros(texto)
 
+@router.get("/estadisticas", response_model=dict[str, int])
+def obtener_estadisticas():
+    return servicio_libros.obtener_estadisticas()
+
 @router.get("/{libro_id}", response_model=Libro)
 def obtener_libro(libro_id: int):
     return servicio_libros.obtener_libro(libro_id)
