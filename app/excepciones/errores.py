@@ -12,3 +12,6 @@ class LibroNoEncontradoError(ErrorDeNegocio):
 
 class LibroDuplicadoError(ErrorDeNegocio):
     """Ya existe un libro con el mismo título y autor (409)."""
+
+class EstadoLibroError(ErrorDeNegocio):
+    """La operación no es válida para el estado actual del libro (409)."""
