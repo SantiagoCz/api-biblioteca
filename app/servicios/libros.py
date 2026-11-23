@@ -1,4 +1,4 @@
-from app.excepciones.errores import LibroDuplicadoError, LibroNoEncontradoError
+from app.excepciones.errores import LibroDuplicadoError, LibroNoEncontradoError, EstadoLibroError
 from app.modelos.libro import Libro, LibroEntrada
 from app.repositorios import libros as repositorio_libros
 
@@ -50,9 +50,15 @@ def actualizar_libro(libro_id: int, campos_recibidos: dict) -> Libro:
     libro_actualizado = Libro(id=libro_id, **libro_validado.model_dump())
     return repositorio_libros.actualizar(libro_actualizado)
 
+def prestar_libro(libro_id: int) -> Libro:
+    return cambiar_disponibilidad(libro_id, disponible=False)
+
+def devolver_libro(libro_id: int) -> Libro:
+    return cambiar_disponibilidad(libro_id, disponible=True)
+
 # DELETE
 def eliminar_libro(libro_id: int) -> None:
-    obtener_libro(libro_id)  # lanza 404 si no existe
+    obtener_libro(libro_id)
     repositorio_libros.eliminar(libro_id)
 
 # AUX METHODS
@@ -99,3 +105,10 @@ def filtrar_por_disponibilidad(libros: list[Libro], disponible: bool | None) -> 
 
 def paginar(libros: list[Libro], desde: int, limite: int) -> list[Libro]:
     return libros[desde : desde + limite]
+
+def cambiar_disponibilidad(libro_id: int, disponible: bool) -> Libro:
+    libro = obtener_libro(libro_id)
+    if libro.disponible == disponible:
+        mensaje = "El libro ya está disponible." if disponible else "El libro ya está prestado."
+        raise EstadoLibroError(mensaje)
+    return repositorio_libros.actualizar(libro.model_copy(update={"disponible": disponible}))
