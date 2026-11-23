@@ -40,6 +40,15 @@ def buscar_libros(texto: str) -> list[Libro]:
         or texto_minuscula in libro.autor.lower()
     ]
 
+def obtener_estadisticas() -> dict[str, int]:
+    libros = repositorio_libros.obtener_todos()
+    disponibles = sum(1 for libro in libros if libro.disponible)
+    return {
+        "total": len(libros),
+        "disponibles": disponibles,
+        "prestados": len(libros) - disponibles,
+    }
+
 # UPDATE
 def actualizar_libro(libro_id: int, campos_recibidos: dict) -> Libro:
     libro_actual = obtener_libro(libro_id)
