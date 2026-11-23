@@ -2,7 +2,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from app.excepciones.errores import LibroDuplicadoError, LibroNoEncontradoError, EstadoLibroError
+from app.excepciones.errores import (
+    EstadoLibroError,
+    LibroDuplicadoError,
+    LibroNoEncontradoError,
+)
+
 
 def registrar_manejadores(app: FastAPI) -> None:
 

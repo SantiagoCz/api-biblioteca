@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class LibroEntrada(BaseModel):
     titulo: str = Field(min_length=3, max_length=100)
     autor: str = Field(min_length=3, max_length=60, pattern=r"^[A-Za-zÁÉÍÓÚáéíóúÑñÜü][A-Za-zÁÉÍÓÚáéíóúÑñÜü .'\-]*$")
