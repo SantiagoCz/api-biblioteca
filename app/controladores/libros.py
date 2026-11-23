@@ -37,6 +37,14 @@ def actualizar_libro(libro_id: int, entrada: LibroEntrada):
 def actualizar_campo(libro_id: int, campos: dict):
     return servicio_libros.actualizar_libro(libro_id, campos)
 
+@router.post("/{libro_id}/prestar", response_model=Libro)
+def prestar_libro(libro_id: int):
+    return servicio_libros.prestar_libro(libro_id)
+
+@router.post("/{libro_id}/devolver", response_model=Libro)
+def devolver_libro(libro_id: int):
+    return servicio_libros.devolver_libro(libro_id)
+
 # DELETE
 @router.delete("/{libro_id}", status_code=204)
 def eliminar_libro(libro_id: int):
