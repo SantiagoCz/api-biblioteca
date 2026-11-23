@@ -6,12 +6,12 @@ from app.servicios import libros as servicio_libros
 router = APIRouter(prefix="/libros", tags=["libros"])
 
 # CREATE
-@router.post("", response_model=Libro, status_code=201)
+@router.post("", response_model=Libro, status_code=201, summary="Crear libro")
 def crear_libro(entrada: LibroEntrada):
     return servicio_libros.crear_libro(entrada)
 
 # READ
-@router.get("", response_model=list[Libro])
+@router.get("", response_model=list[Libro], summary="Listar libros")
 def listar_libros(
     autor: str | None = None,
     disponible: bool | None = None,
@@ -20,36 +20,36 @@ def listar_libros(
 ):
     return servicio_libros.listar_libros(autor, disponible, desde, limite)
 
-@router.get("/buscar", response_model=list[Libro])
+@router.get("/buscar", response_model=list[Libro], summary="Buscar libros por texto")
 def buscar_libros(texto: str):
     return servicio_libros.buscar_libros(texto)
 
-@router.get("/estadisticas", response_model=dict[str, int])
+@router.get("/estadisticas", response_model=dict[str, int], summary="Obtener estadísticas")
 def obtener_estadisticas():
     return servicio_libros.obtener_estadisticas()
 
-@router.get("/{libro_id}", response_model=Libro)
+@router.get("/{libro_id}", response_model=Libro, summary="Obtener libro por id")
 def obtener_libro(libro_id: int):
     return servicio_libros.obtener_libro(libro_id)
 
 # UPDATE
-@router.put("/{libro_id}", response_model=Libro)
+@router.put("/{libro_id}", response_model=Libro, summary="Actualizar libro completo")
 def actualizar_libro(libro_id: int, entrada: LibroEntrada):
     return servicio_libros.actualizar_libro(libro_id, entrada.model_dump())
 
-@router.patch("/{libro_id}", response_model=Libro)
+@router.patch("/{libro_id}", response_model=Libro, summary="Actualizar campos del libro")
 def actualizar_campo(libro_id: int, campos: dict):
     return servicio_libros.actualizar_libro(libro_id, campos)
 
-@router.post("/{libro_id}/prestar", response_model=Libro)
+@router.post("/{libro_id}/prestar", response_model=Libro, summary="Prestar libro")
 def prestar_libro(libro_id: int):
     return servicio_libros.prestar_libro(libro_id)
 
-@router.post("/{libro_id}/devolver", response_model=Libro)
+@router.post("/{libro_id}/devolver", response_model=Libro, summary="Devolver libro")
 def devolver_libro(libro_id: int):
     return servicio_libros.devolver_libro(libro_id)
 
 # DELETE
-@router.delete("/{libro_id}", status_code=204)
+@router.delete("/{libro_id}", status_code=204, summary="Eliminar libro")
 def eliminar_libro(libro_id: int):
     servicio_libros.eliminar_libro(libro_id)
