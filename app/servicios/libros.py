@@ -1,6 +1,10 @@
+import logging
+
 from app.excepciones.errores import LibroDuplicadoError, LibroNoEncontradoError, EstadoLibroError
 from app.modelos.libro import Libro, LibroEntrada
 from app.repositorios import libros as repositorio_libros
+
+logger = logging.getLogger(__name__)
 
 CAMPOS_EDITABLES = {"titulo", "autor", "anio", "disponible"}
 
@@ -11,7 +15,9 @@ def crear_libro(datos_nuevos: LibroEntrada) -> Libro:
         "autor": normalizar_texto(datos_nuevos.autor),
     })
     verificar_duplicado(datos_normalizados.titulo, datos_normalizados.autor)
-    return repositorio_libros.crear(datos_normalizados)
+    libro = repositorio_libros.crear(datos_normalizados)
+    logger.info("Libro creado: id=%s, titulo=%s", libro.id, libro.titulo)
+    return libro
 
 # READ
 def listar_libros(
@@ -57,7 +63,9 @@ def actualizar_libro(libro_id: int, campos_recibidos: dict) -> Libro:
     verificar_duplicado(libro_validado.titulo, libro_validado.autor, excluir_id=libro_id)
 
     libro_actualizado = Libro(id=libro_id, **libro_validado.model_dump())
-    return repositorio_libros.actualizar(libro_actualizado)
+    libro_guardado = repositorio_libros.actualizar(libro_actualizado)
+    logger.info("Libro actualizado: id=%s, campos=%s", libro_id, sorted(cambios.keys()))
+    return libro_guardado
 
 def prestar_libro(libro_id: int) -> Libro:
     return cambiar_disponibilidad(libro_id, disponible=False)
@@ -69,6 +77,7 @@ def devolver_libro(libro_id: int) -> Libro:
 def eliminar_libro(libro_id: int) -> None:
     obtener_libro(libro_id)
     repositorio_libros.eliminar(libro_id)
+    logger.info("Libro eliminado: id=%s", libro_id)
 
 # AUX METHODS
 def _buscar_libro(libro_id: int) -> Libro | None:
@@ -120,4 +129,6 @@ def cambiar_disponibilidad(libro_id: int, disponible: bool) -> Libro:
     if libro.disponible == disponible:
         mensaje = "El libro ya está disponible." if disponible else "El libro ya está prestado."
         raise EstadoLibroError(mensaje)
-    return repositorio_libros.actualizar(libro.model_copy(update={"disponible": disponible}))
+    libro_actualizado = repositorio_libros.actualizar(libro.model_copy(update={"disponible": disponible}))
+    logger.info("Estado cambiado: id=%s, disponible=%s", libro_id, disponible)
+    return libro_actualizado
